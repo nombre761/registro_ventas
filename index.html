@@ -2,15 +2,11 @@
 <html lang="es">
 
 <head>
-
   <meta charset="UTF-8">
-
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Registro de venta</title>
 
   <style>
-
     body {
       font-family: Arial, sans-serif;
       display: flex;
@@ -81,9 +77,7 @@
       text-align: center;
       font-weight: bold;
     }
-
   </style>
-
 </head>
 
 <body>
@@ -143,10 +137,7 @@
         required
       >
 
-      <button
-        type="submit"
-        id="btnEnviar"
-      >
+      <button type="submit" id="btnEnviar">
         Enviar Registro
       </button>
 
@@ -156,25 +147,20 @@
 
   </div>
 
-
   <script>
 
-      const URL_WEB_APP =
-  "https://script.google.com/macros/s/AKfycbwU8kZ-msb0pQdzwk-C0kBNxt7JbskEyrfQdWTrSyJIh6G-vRZqIkCT84inJyfqlRArFg/exec";
+    const URL_WEB_APP =
+      "https://script.google.com/macros/s/AKfycbwU8kZ-msb0pQdzwk-C0kBNxt7JbskEyrfQdWTrSyJIh6G-vRZqIkCT84inJyfqlRArFg/exec";
 
 
     document
       .getElementById("formulario")
-      .addEventListener("submit", function(e) {
+      .addEventListener("submit", async function(e) {
 
         e.preventDefault();
 
-        const btn =
-          document.getElementById("btnEnviar");
-
-        const msg =
-          document.getElementById("mensaje");
-
+        const btn = document.getElementById("btnEnviar");
+        const msg = document.getElementById("mensaje");
 
         btn.disabled = true;
         btn.innerText = "Enviando...";
@@ -185,17 +171,16 @@
 
         const datos = {
 
-          nombre:
-            document.getElementById("nombre").value,
+          nombre: document.getElementById("nombre").value.trim(),
 
           tarjetaCelular:
-            document.getElementById("tarjetaCelular").value,
+            document.getElementById("tarjetaCelular").value.trim(),
 
           cantidad:
             document.getElementById("cantidad").value,
 
           producto:
-            document.getElementById("producto").value,
+            document.getElementById("producto").value.trim(),
 
           iva:
             document.getElementById("iva").value,
@@ -206,51 +191,58 @@
         };
 
 
-        fetch(URL_WEB_APP, {
+        try {
 
-          method: "POST",
+          const respuesta = await fetch(URL_WEB_APP, {
 
-          mode: "no-cors",
+            method: "POST",
 
-          headers: {
-            "Content-Type": "text/plain"
-          },
+            headers: {
+              "Content-Type": "text/plain;charset=utf-8"
+            },
 
-          body: JSON.stringify(datos)
+            body: JSON.stringify(datos)
 
-        })
+          });
 
-        .then(() => {
 
-          msg.style.color = "green";
+          const resultado = await respuesta.json();
 
-          msg.innerHTML =
-            "✅ ¡Registro enviado correctamente!";
 
-          document
-            .getElementById("formulario")
-            .reset();
+          if (resultado.resultado === "ok") {
 
-        })
+            msg.style.color = "green";
 
-        .catch(error => {
+            msg.innerHTML =
+              "✅ ¡Registro guardado correctamente!";
+
+            document
+              .getElementById("formulario")
+              .reset();
+
+          } else {
+
+            throw new Error(
+              resultado.error || "Error al guardar el registro."
+            );
+
+          }
+
+        } catch (error) {
+
+          console.error("Error:", error);
 
           msg.style.color = "red";
 
           msg.innerHTML =
-            "❌ Error de conexión.";
+            "❌ No se pudo guardar: " + error.message;
 
-          console.error("Error:", error);
-
-        })
-
-        .finally(() => {
+        } finally {
 
           btn.disabled = false;
-
           btn.innerText = "Enviar Registro";
 
-        });
+        }
 
       });
 
