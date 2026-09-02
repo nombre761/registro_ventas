@@ -9,7 +9,6 @@
     .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.12); width: 100%; max-width: 420px; }
     h2 { text-align: center; margin-top: 0; margin-bottom: 25px; color: #333; }
     input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 15px; }
-    input:focus { outline: none; border-color: #28a745; }
     button { width: 100%; padding: 12px; margin-top: 15px; background-color: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; }
     button:hover { background-color: #218838; }
     button:disabled { background-color: #999; cursor: not-allowed; }
@@ -21,9 +20,9 @@
     <h2>Registro de venta</h2>
     <form id="formulario">
       <input type="text" id="nombre" placeholder="Nombre completo" required>
-      <input type="text" id="tarjetaCelular" placeholder="Número de tarjeta o celular" inputmode="numeric" required>
-      <input type="number" id="cantidad" placeholder="Cantidad de productos" min="1" required>
-      <input type="text" id="producto" placeholder="Nombre del producto" required>
+      <input type="text" id="tarjetaCelular" placeholder="Tarjeta o celular" required>
+      <input type="number" id="cantidad" placeholder="Cantidad" required>
+      <input type="text" id="producto" placeholder="Producto" required>
       <input type="number" id="comision" placeholder="Comisión" step="0.01" required>
       <input type="number" id="total" placeholder="Total" step="0.01" required>
       <button type="submit" id="btnEnviar">Enviar Registro</button>
@@ -32,7 +31,8 @@
   </div>
 
   <script>
-    const URL_WEB_APP = "https://script.google.com/macros/s/AKfycbxtO8PLSCPbVOnByH5swFu4yTXdVCBPcX3_zcd4FURKTZnq6c4mFOYEwGl74SoBU1lW5A/exec";
+    // ✅ URL NUEVA PUESTA AQUÍ
+    const URL = "https://script.google.com/macros/s/AKfycbzOKwr-v-qucBRwPBIPyFXsncVQdbjVR4ZWgvkHT0DTdJppX3rtPJ6VKmUXn8u-fCHwww/exec";
 
     document.getElementById("formulario").addEventListener("submit", async e => {
       e.preventDefault();
@@ -53,7 +53,7 @@
       };
 
       try {
-        const res = await fetch(URL_WEB_APP, {
+        const res = await fetch(URL, {
           method: "POST",
           headers: { "Content-Type": "application/json; charset=utf-8" },
           body: JSON.stringify(datos)
