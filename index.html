@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 
@@ -122,8 +121,8 @@
 
       <input
         type="number"
-        id="iva"
-        placeholder="IVA"
+        id="comision"
+        placeholder="Comisión"
         min="0"
         step="0.01"
         required
@@ -153,7 +152,6 @@
     const URL_WEB_APP =
       "https://script.google.com/macros/s/AKfycbzOKwr-v-qucBRwPBIPyFXsncVQdbjVR4ZWgvkHT0DTdJppX3rtPJ6VKmUXn8u-fCHwww/exec";
 
-
     document
       .getElementById("formulario")
       .addEventListener("submit", async function(e) {
@@ -169,7 +167,6 @@
         msg.style.color = "black";
         msg.innerHTML = "⏳ Procesando...";
 
-
         const datos = {
 
           nombre: document.getElementById("nombre").value.trim(),
@@ -183,14 +180,13 @@
           producto:
             document.getElementById("producto").value.trim(),
 
-          iva:
-            document.getElementById("iva").value,
+          comision:
+            document.getElementById("comision").value,
 
           total:
             document.getElementById("total").value
 
         };
-
 
         try {
 
@@ -206,9 +202,7 @@
 
           });
 
-
           const resultado = await respuesta.json();
-
 
           if (resultado.resultado === "ok") {
 
