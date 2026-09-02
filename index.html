@@ -1,11 +1,9 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Registro de venta</title>
-
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -18,7 +16,6 @@
       background-color: #f4f4f9;
       box-sizing: border-box;
     }
-
     .card {
       background: white;
       padding: 30px;
@@ -28,14 +25,12 @@
       max-width: 420px;
       box-sizing: border-box;
     }
-
     h2 {
       text-align: center;
       margin-top: 0;
       margin-bottom: 25px;
       color: #333;
     }
-
     input {
       width: 100%;
       padding: 12px;
@@ -45,12 +40,10 @@
       box-sizing: border-box;
       font-size: 15px;
     }
-
     input:focus {
       outline: none;
       border-color: #28a745;
     }
-
     button {
       width: 100%;
       padding: 12px;
@@ -62,16 +55,13 @@
       cursor: pointer;
       font-size: 16px;
     }
-
     button:hover {
       background-color: #218838;
     }
-
     button:disabled {
       background-color: #999;
       cursor: not-allowed;
     }
-
     #mensaje {
       margin-top: 15px;
       text-align: center;
@@ -79,22 +69,16 @@
     }
   </style>
 </head>
-
 <body>
-
   <div class="card">
-
     <h2>Registro de venta</h2>
-
     <form id="formulario">
-
       <input
         type="text"
         id="nombre"
         placeholder="Nombre completo"
         required
       >
-
       <input
         type="text"
         id="tarjetaCelular"
@@ -102,7 +86,6 @@
         inputmode="numeric"
         required
       >
-
       <input
         type="number"
         id="cantidad"
@@ -111,23 +94,20 @@
         step="1"
         required
       >
-
       <input
         type="text"
         id="producto"
         placeholder="Nombre del producto"
         required
       >
-
       <input
         type="number"
-        id="comisión"
-        placeholder="comisión"
+        id="comision"
+        placeholder="Comisión"
         min="0"
         step="0.01"
         required
       >
-
       <input
         type="number"
         id="total"
@@ -136,118 +116,69 @@
         step="0.01"
         required
       >
-
       <button type="submit" id="btnEnviar">
         Enviar Registro
       </button>
-
     </form>
-
     <p id="mensaje"></p>
-
   </div>
-
   <script>
-
     const URL_WEB_APP =
       "https://script.google.com/macros/s/AKfycbwU8kZ-msb0pQdzwk-C0kBNxt7JbskEyrfQdWTrSyJIh6G-vRZqIkCT84inJyfqlRArFg/exec";
-
-
     document
       .getElementById("formulario")
       .addEventListener("submit", async function(e) {
-
         e.preventDefault();
-
         const btn = document.getElementById("btnEnviar");
         const msg = document.getElementById("mensaje");
-
         btn.disabled = true;
         btn.innerText = "Enviando...";
-
         msg.style.color = "black";
         msg.innerHTML = "⏳ Procesando...";
-
-
         const datos = {
-
           nombre: document.getElementById("nombre").value.trim(),
-
           tarjetaCelular:
             document.getElementById("tarjetaCelular").value.trim(),
-
           cantidad:
             document.getElementById("cantidad").value,
-
           producto:
             document.getElementById("producto").value.trim(),
-
           comision:
-            document.getElementById("comisión").value,
-
+            document.getElementById("comision").value,
           total:
             document.getElementById("total").value
-
         };
-
-
         try {
-
           const respuesta = await fetch(URL_WEB_APP, {
-
             method: "POST",
-
             headers: {
               "Content-Type": "text/plain;charset=utf-8"
             },
-
             body: JSON.stringify(datos)
-
           });
-
-
           const resultado = await respuesta.json();
-
-
           if (resultado.resultado === "ok") {
-
             msg.style.color = "green";
-
             msg.innerHTML =
               "✅ ¡Registro guardado correctamente!";
-
             document
               .getElementById("formulario")
               .reset();
-
           } else {
-
             throw new Error(
               resultado.error || "Error al guardar el registro."
             );
-
           }
-
         } catch (error) {
-
           console.error("Error:", error);
-
           msg.style.color = "red";
-
           msg.innerHTML =
             "❌ No se pudo guardar: " + error.message;
-
         } finally {
-
           btn.disabled = false;
           btn.innerText = "Enviar Registro";
-
         }
-
       });
-
   </script>
-
 </body>
-
 </html>
