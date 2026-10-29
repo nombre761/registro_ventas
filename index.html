@@ -1,3 +1,11 @@
+Para integrar el cálculo automático de comisión y total final en tu HTML, se deben hacer dos cosas dentro de tu archivo:
+
+1. **En el formulario (`<form>`):** Agregar el input para `precioUnitario` y modificar los campos de `comision` y `total` a `readonly` (solo lectura) para que se calculen solos.
+2. **En el script (`<script>`):** Agregar la constante del porcentaje (10%), la función `calcularTotales()`, los escuchadores de evento (`input`), e incluir `precioUnitario` dentro del objeto `datos` que envías a Google Apps Script.
+
+Aquí tienes tu archivo HTML completo ya integrado y listo para usarse:
+
+```html
 <!DOCTYPE html>
 <html lang="es">
 
@@ -49,6 +57,13 @@
     input:focus {
       outline: none;
       border-color: #28a745;
+    }
+
+    /* Estilo para los campos deshabilitados / de solo lectura */
+    input[readonly] {
+      background-color: #e9ecef;
+      color: #495057;
+      cursor: not-allowed;
     }
 
     button {
@@ -104,15 +119,6 @@
       >
 
       <input
-        type="number"
-        id="cantidad"
-        placeholder="Cantidad de productos"
-        min="1"
-        step="1"
-        required
-      >
-
-      <input
         type="text"
         id="producto"
         placeholder="Nombre del producto"
@@ -121,20 +127,37 @@
 
       <input
         type="number"
-        id="comision"
-        placeholder="Comisión"
+        id="cantidad"
+        placeholder="Cantidad de productos"
+        min="1"
+        step="1"
+        required
+      >
+
+      <!-- CAMBIO 1: Campo de Precio Unitario -->
+      <input
+        type="number"
+        id="precioUnitario"
+        placeholder="Precio unitario ($)"
         min="0"
         step="0.01"
         required
       >
 
+      <!-- CAMBIO 2: Comisión automatizada (readonly) -->
       <input
-        type="number"
+        type="text"
+        id="comision"
+        placeholder="Comisión (10%)"
+        readonly
+      >
+
+      <!-- CAMBIO 3: Total automatizado (readonly) -->
+      <input
+        type="text"
         id="total"
-        placeholder="Total"
-        min="0"
-        step="0.01"
-        required
+        placeholder="Total final"
+        readonly
       >
 
       <button type="submit" id="btnEnviar">
@@ -150,8 +173,34 @@
   <script>
 
     const URL_WEB_APP =
-      "https://script.google.com/macros/s/AKfycbzOKwr-v-qucBRwPBIPyFXsncVQdbjVR4ZWgvkHT0DTdJppX3rtPJ6VKmUXn8u-fCHwww/exec";
+      "https://script.google.com/macros/s/AKfycbxlob7rhWYTRwM9TcCPUZiWV0xWpGq2tED4qC30EYYLhZFZqqHRyd-9o69b1q7I1Kv5gQ/exec";
 
+    // --- CÁLCULO AUTOMÁTICO DE COMISIÓN Y TOTAL ---
+    const PORCENTAJE_COMISION = 0.10;
+
+    const inputCantidad = document.getElementById("cantidad");
+    const inputPrecioUnitario = document.getElementById("precioUnitario");
+    const inputComision = document.getElementById("comision");
+    const inputTotal = document.getElementById("total");
+
+    function calcularTotales() {
+      const cantidad = parseFloat(inputCantidad.value) || 0;
+      const precioUnitario = parseFloat(inputPrecioUnitario.value) || 0;
+
+      const subtotal = cantidad * precioUnitario;
+      const comision = subtotal * PORCENTAJE_COMISION;
+      const totalFinal = subtotal + comision;
+
+      inputComision.value = comision.toFixed(2);
+      inputTotal.value = totalFinal.toFixed(2);
+    }
+
+    // Escuchar cuando el usuario escribe en cantidad o precio
+    inputCantidad.addEventListener("input", calcularTotales);
+    inputPrecioUnitario.addEventListener("input", calcularTotales);
+    // ------------------------------------------------
+
+    // --- ENVÍO DEL FORMULARIO ---
     document
       .getElementById("formulario")
       .addEventListener("submit", async function(e) {
@@ -168,38 +217,23 @@
         msg.innerHTML = "⏳ Procesando...";
 
         const datos = {
-
           nombre: document.getElementById("nombre").value.trim(),
-
-          tarjetaCelular:
-            document.getElementById("tarjetaCelular").value.trim(),
-
-          cantidad:
-            document.getElementById("cantidad").value,
-
-          producto:
-            document.getElementById("producto").value.trim(),
-
-          comision:
-            document.getElementById("comision").value,
-
-          total:
-            document.getElementById("total").value
-
+          tarjetaCelular: document.getElementById("tarjetaCelular").value.trim(),
+          producto: document.getElementById("producto").value.trim(),
+          cantidad: inputCantidad.value,
+          precioUnitario: inputPrecioUnitario.value, // Enviamos el precio unitario
+          comision: inputComision.value,
+          total: inputTotal.value
         };
 
         try {
 
           const respuesta = await fetch(URL_WEB_APP, {
-
             method: "POST",
-
             headers: {
               "Content-Type": "text/plain;charset=utf-8"
             },
-
             body: JSON.stringify(datos)
-
           });
 
           const resultado = await respuesta.json();
@@ -207,13 +241,13 @@
           if (resultado.resultado === "ok") {
 
             msg.style.color = "green";
+            msg.innerHTML = "✅ ¡Registro guardado correctamente!";
 
-            msg.innerHTML =
-              "✅ ¡Registro guardado correctamente!";
-
-            document
-              .getElementById("formulario")
-              .reset();
+            document.getElementById("formulario").reset();
+            
+            // Limpiar valores calculados
+            inputComision.value = "";
+            inputTotal.value = "";
 
           } else {
 
@@ -228,9 +262,7 @@
           console.error("Error:", error);
 
           msg.style.color = "red";
-
-          msg.innerHTML =
-            "❌ No se pudo guardar: " + error.message;
+          msg.innerHTML = "❌ No se pudo guardar: " + error.message;
 
         } finally {
 
