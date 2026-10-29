@@ -97,7 +97,7 @@
       <input
         type="text"
         id="nombre"
-        placeholder="Nombre completo"
+        placeholder="Nombre completo del cliente"
         required
       >
 
@@ -118,6 +118,22 @@
 
       <input
         type="number"
+        id="precioUnitario"
+        placeholder="Precio base por pieza ($)"
+        min="0"
+        step="0.01"
+        required
+      >
+
+      <input
+        type="text"
+        id="precioConComision"
+        placeholder="Precio por pieza cobrado (+10%)"
+        readonly
+      >
+
+      <input
+        type="number"
         id="cantidad"
         placeholder="Cantidad de productos"
         min="1"
@@ -126,25 +142,16 @@
       >
 
       <input
-        type="number"
-        id="precioUnitario"
-        placeholder="Precio unitario ($)"
-        min="0"
-        step="0.01"
-        required
-      >
-
-      <input
         type="text"
-        id="comision"
-        placeholder="Comisión (10%)"
+        id="comisionTotal"
+        placeholder="Comisión total ($)"
         readonly
       >
 
       <input
         type="text"
         id="total"
-        placeholder="Total final"
+        placeholder="Total a cobrar en caja ($)"
         readonly
       >
 
@@ -164,25 +171,32 @@
 
     const PORCENTAJE_COMISION = 0.10;
 
-    const inputCantidad = document.getElementById("cantidad");
     const inputPrecioUnitario = document.getElementById("precioUnitario");
-    const inputComision = document.getElementById("comision");
+    const inputPrecioConComision = document.getElementById("precioConComision");
+    const inputCantidad = document.getElementById("cantidad");
+    const inputComisionTotal = document.getElementById("comisionTotal");
     const inputTotal = document.getElementById("total");
 
     function calcularTotales() {
-      const cantidad = parseFloat(inputCantidad.value) || 0;
       const precioUnitario = parseFloat(inputPrecioUnitario.value) || 0;
+      const cantidad = parseFloat(inputCantidad.value) || 0;
 
-      const subtotal = cantidad * precioUnitario;
-      const comision = subtotal * PORCENTAJE_COMISION;
-      const totalFinal = subtotal + comision;
+      // Cálculos por pieza
+      const comisionPorPieza = precioUnitario * PORCENTAJE_COMISION;
+      const precioPiezaCobrado = precioUnitario + comisionPorPieza;
 
-      inputComision.value = comision.toFixed(2);
-      inputTotal.value = totalFinal.toFixed(2);
+      // Cálculos globales
+      const comisionTotal = comisionPorPieza * cantidad;
+      const totalFinal = precioPiezaCobrado * cantidad;
+
+      // Mostrar en pantalla
+      inputPrecioConComision.value = precioPiezaCobrado ? precioPiezaCobrado.toFixed(2) : "";
+      inputComisionTotal.value = comisionTotal ? comisionTotal.toFixed(2) : "";
+      inputTotal.value = totalFinal ? totalFinal.toFixed(2) : "";
     }
 
-    inputCantidad.addEventListener("input", calcularTotales);
     inputPrecioUnitario.addEventListener("input", calcularTotales);
+    inputCantidad.addEventListener("input", calcularTotales);
 
     document
       .getElementById("formulario")
@@ -203,9 +217,10 @@
           nombre: document.getElementById("nombre").value.trim(),
           tarjetaCelular: document.getElementById("tarjetaCelular").value.trim(),
           producto: document.getElementById("producto").value.trim(),
-          cantidad: inputCantidad.value,
           precioUnitario: inputPrecioUnitario.value,
-          comision: inputComision.value,
+          precioConComision: inputPrecioConComision.value,
+          cantidad: inputCantidad.value,
+          comisionTotal: inputComisionTotal.value,
           total: inputTotal.value
         };
 
@@ -228,7 +243,8 @@
 
             document.getElementById("formulario").reset();
             
-            inputComision.value = "";
+            inputPrecioConComision.value = "";
+            inputComisionTotal.value = "";
             inputTotal.value = "";
 
           } else {
