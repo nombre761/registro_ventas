@@ -1,18 +1,10 @@
-Para integrar el cálculo automático de comisión y total final en tu HTML, se deben hacer dos cosas dentro de tu archivo:
-
-1. **En el formulario (`<form>`):** Agregar el input para `precioUnitario` y modificar los campos de `comision` y `total` a `readonly` (solo lectura) para que se calculen solos.
-2. **En el script (`<script>`):** Agregar la constante del porcentaje (10%), la función `calcularTotales()`, los escuchadores de evento (`input`), e incluir `precioUnitario` dentro del objeto `datos` que envías a Google Apps Script.
-
-Aquí tienes tu archivo HTML completo ya integrado y listo para usarse:
-
-```html
 <!DOCTYPE html>
 <html lang="es">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Registro de venta</title>
+  <title>Registro de Venta</title>
 
   <style>
     body {
@@ -59,7 +51,6 @@ Aquí tienes tu archivo HTML completo ya integrado y listo para usarse:
       border-color: #28a745;
     }
 
-    /* Estilo para los campos deshabilitados / de solo lectura */
     input[readonly] {
       background-color: #e9ecef;
       color: #495057;
@@ -134,7 +125,6 @@ Aquí tienes tu archivo HTML completo ya integrado y listo para usarse:
         required
       >
 
-      <!-- CAMBIO 1: Campo de Precio Unitario -->
       <input
         type="number"
         id="precioUnitario"
@@ -144,7 +134,6 @@ Aquí tienes tu archivo HTML completo ya integrado y listo para usarse:
         required
       >
 
-      <!-- CAMBIO 2: Comisión automatizada (readonly) -->
       <input
         type="text"
         id="comision"
@@ -152,7 +141,6 @@ Aquí tienes tu archivo HTML completo ya integrado y listo para usarse:
         readonly
       >
 
-      <!-- CAMBIO 3: Total automatizado (readonly) -->
       <input
         type="text"
         id="total"
@@ -171,11 +159,9 @@ Aquí tienes tu archivo HTML completo ya integrado y listo para usarse:
   </div>
 
   <script>
-
     const URL_WEB_APP =
-      "https://script.google.com/macros/s/AKfycbxlob7rhWYTRwM9TcCPUZiWV0xWpGq2tED4qC30EYYLhZFZqqHRyd-9o69b1q7I1Kv5gQ/exec";
+       "https://script.google.com/macros/s/AKfycbxlob7rhWYTRwM9TcCPUZiWV0xWpGq2tED4qC30EYYLhZFZqqHRyd-9o69b1q7I1Kv5gQ/exec";
 
-    // --- CÁLCULO AUTOMÁTICO DE COMISIÓN Y TOTAL ---
     const PORCENTAJE_COMISION = 0.10;
 
     const inputCantidad = document.getElementById("cantidad");
@@ -195,12 +181,9 @@ Aquí tienes tu archivo HTML completo ya integrado y listo para usarse:
       inputTotal.value = totalFinal.toFixed(2);
     }
 
-    // Escuchar cuando el usuario escribe en cantidad o precio
     inputCantidad.addEventListener("input", calcularTotales);
     inputPrecioUnitario.addEventListener("input", calcularTotales);
-    // ------------------------------------------------
 
-    // --- ENVÍO DEL FORMULARIO ---
     document
       .getElementById("formulario")
       .addEventListener("submit", async function(e) {
@@ -221,7 +204,7 @@ Aquí tienes tu archivo HTML completo ya integrado y listo para usarse:
           tarjetaCelular: document.getElementById("tarjetaCelular").value.trim(),
           producto: document.getElementById("producto").value.trim(),
           cantidad: inputCantidad.value,
-          precioUnitario: inputPrecioUnitario.value, // Enviamos el precio unitario
+          precioUnitario: inputPrecioUnitario.value,
           comision: inputComision.value,
           total: inputTotal.value
         };
@@ -245,7 +228,6 @@ Aquí tienes tu archivo HTML completo ya integrado y listo para usarse:
 
             document.getElementById("formulario").reset();
             
-            // Limpiar valores calculados
             inputComision.value = "";
             inputTotal.value = "";
 
@@ -272,7 +254,6 @@ Aquí tienes tu archivo HTML completo ya integrado y listo para usarse:
         }
 
       });
-
   </script>
 
 </body>
