@@ -181,22 +181,34 @@
       const precioUnitario = parseFloat(inputPrecioUnitario.value) || 0;
       const cantidad = parseFloat(inputCantidad.value) || 0;
 
-      // Cálculos por pieza
-      const comisionPorPieza = precioUnitario * PORCENTAJE_COMISION;
-      const precioPiezaCobrado = precioUnitario + comisionPorPieza;
+      if (precioUnitario > 0) {
+        const comisionPorPieza = precioUnitario * PORCENTAJE_COMISION;
+        const precioPiezaCobrado = precioUnitario + comisionPorPieza;
 
-      // Cálculos globales
-      const comisionTotal = comisionPorPieza * cantidad;
-      const totalFinal = precioPiezaCobrado * cantidad;
+        inputPrecioConComision.value = precioPiezaCobrado.toFixed(2);
 
-      // Mostrar en pantalla
-      inputPrecioConComision.value = precioPiezaCobrado ? precioPiezaCobrado.toFixed(2) : "";
-      inputComisionTotal.value = comisionTotal ? comisionTotal.toFixed(2) : "";
-      inputTotal.value = totalFinal ? totalFinal.toFixed(2) : "";
+        if (cantidad > 0) {
+          const comisionTotal = comisionPorPieza * cantidad;
+          const totalFinal = precioPiezaCobrado * cantidad;
+
+          inputComisionTotal.value = comisionTotal.toFixed(2);
+          inputTotal.value = totalFinal.toFixed(2);
+        } else {
+          inputComisionTotal.value = "0.00";
+          inputTotal.value = "0.00";
+        }
+      } else {
+        inputPrecioConComision.value = "";
+        inputComisionTotal.value = "";
+        inputTotal.value = "";
+      }
     }
 
-    inputPrecioUnitario.addEventListener("input", calcularTotales);
-    inputCantidad.addEventListener("input", calcularTotales);
+    // Escuchar múltiples eventos para asegurar que calcule siempre
+    ["input", "keyup", "change", "blur"].forEach(evento => {
+      inputPrecioUnitario.addEventListener(evento, calcularTotales);
+      inputCantidad.addEventListener(evento, calcularTotales);
+    });
 
     document
       .getElementById("formulario")
